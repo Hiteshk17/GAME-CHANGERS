@@ -3,30 +3,32 @@
 import streamlit as st
 from backend import extract_text_from_pdf, chunk_text, build_faiss_index, generate_answer
 
-# ----------------- PAGE SETUP -----------------
-st.set_page_config(page_title="📘 StudyMate PDF Q&A", layout="wide")
-st.title("📘 StudyMate - PDF Q&A")
+st.set_page_config(page_title="📘 StudyMate", layout="wide")
 
-# ----------------- PDF UPLOAD -----------------
-uploaded_file = st.file_uploader("Upload your PDF", type="pdf")
+st.title("📘 StudyMate: AI-Powered PDF Q&A Assistant")
+
+# File uploader
+uploaded_file = st.file_uploader("Upload your PDF", type=["pdf"])
 
 if uploaded_file is not None:
-    # -------- Extract text --------
-    text = extract_text_from_pdf(uploaded_file)
+    with st.spinner("Processing PDF..."):
+        # Step 1: Extract text
+        text = extract_text_from_pdf(uploaded_file)
 
-    # -------- Split into chunks --------
-    chunks = chunk_text(text)
+        # Step 2: Chunk text
+        chunks = chunk_text(text)
 
-    # -------- Build / reuse FAISS index --------
-    if "vectorstore" not in st.session_state:
-        st.session_state.vectorstore = build_faiss_index(chunks)
+        # Step 3: Build FAISS index
+        vectorstore = build_faiss_index(chunks)
 
-    vectorstore = st.session_state.vectorstore
+        st.success("✅ PDF processed successfully!")
 
-    # -------- Ask a Question --------
-    query = st.text_input("❓ Ask a question about the PDF:")
+        # User query input
+        query = st.text_input("Ask a question from your PDF:")
 
-    if query:
-        response = generate_answer(query, vectorstore)
-        st.subheader("✅ Answer:")
-        st.write(response)
+        if query:
+            with st.spinner("Generating answer..."):
+                answer = generate_answer(query, vectorstore)
+
+            st.subheader("📖 Answer")
+            st.write(answer)
