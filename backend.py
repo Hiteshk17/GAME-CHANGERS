@@ -44,7 +44,7 @@ def load_llm():
         # 🔹 Get API key from environment variable, fallback to hardcoded
         api_key = os.getenv(
             "GEMINI_API_KEY",
-            "AIzaSyDTFJcMwvhqSPIgdQA81zDFZBz_hY2K6AU"  # fallback if not set
+            "your API key"  # fallback if not set
         )
         genai.configure(api_key=api_key)
         st.session_state.llm = genai.GenerativeModel("gemini-1.5-flash-latest")
